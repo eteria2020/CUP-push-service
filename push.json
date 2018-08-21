@@ -1,0 +1,9 @@
+{
+ "apps" : [{
+	"name"	: "pushService",
+	"script": "index.js",
+	"merge_logs" : true,
+	"error_file" : "/var/log/services/pushservices_error.log",
+	"out_file" : "/var/log/services/pushservices_out.log"
+ }]
+}

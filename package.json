@@ -1,0 +1,25 @@
+{
+  "name": "api_node",
+  "version": "1.0.0",
+  "description": "APIs on NodeJS for Sharengo",
+  "main": "index.js",
+  "author": "Diego Betto",
+  "dependencies": {
+    "bunyan": "1.4.0",
+    "morgan": "1.6.0",
+    "passport": "0.2.2",
+    "passport-http": "0.2.2",
+    "passport-local": "^1.0.0",
+    "pg": "^4.4.4",
+    "pg-native": "1.8",
+    "restify": "2.6.3",
+    "validator": "3.40",
+    "pg-pubsub": "0.1.1",
+    "pg-spice": "2.0.1"
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://git.mvlabs.it/clients/sharengo-api.git"
+  }
+}
