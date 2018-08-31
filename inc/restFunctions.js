@@ -12,7 +12,14 @@ module.exports = {
         });
         return next();
     },
+    /**
+     *
+     * @param {lib/request}req
+     * @param res
+     * @param next
+     */
     endTripForUsername: function (req, res, next) {
+        req.
         next();
         push.sendEndTrip(req.params,function (data, err) {
             if(err){

@@ -38,6 +38,11 @@ var notifyReceiver = require('./inc/NotifyReceiver')( {pg: pg, conString: conStr
 notifyReceiver.doListen();
 
 
+//Notify Receiver
+var TripNotifier = require('./inc/TripNotifier')( {pg: pg, conString: conString});
+TripNotifier.doListen();
+
+
 var defaultDistance = 300;
 
 // exports for modules
