@@ -7,6 +7,7 @@ var pg = require('pg');
 pg.defaults.poolSize = 25;
 pg.defaults.poolIdleTimeout=5000; // 5 sec
 var config = require("../config");
+var timeService = require("./TimeService");
 var Db = require("./db")({pg:pg,conString:config.conString});
 var time = 60;
 var interval = 30*60; //30 minutes
@@ -52,14 +53,20 @@ function fetchForTrip() {
         //console.log(res.rows);
 
         for(var i=0;i<res.rowCount;i++){
+            var dataEn = new Date (res.rows[i].time);
+            var dataIta = timeService.getDataIta(dataEn);
             var params = {
-                beginning:res.rows[0].time,
-                username: res.rows[0].email
+                //FULVIO MALISSIMO !!
+
+                beginning: dataIta,
+                username : res.rows[i].email
             };
+
             push.sendOpenTrip(params, function (data, err) {
                 console.log(JSON.stringify(data));
                 console.log(JSON.stringify(err));
-            })
+            });
+
         }
     })
     
