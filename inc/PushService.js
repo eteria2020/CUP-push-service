@@ -51,7 +51,7 @@ module.exports = {
 
         var message = {
             app_id: "202ca4a0-8ec3-4db3-af38-2986a3138106",
-            contents: {"en": "English Message","it":"Hai una corsa aperta iniziata alle "+params.beginning +" \n Stai ancora utilizzando la macchina?"},
+            contents: {"en": "English Message","it":"Hai una corsa aperta iniziata " + params.beginning + "\n Stai ancora utilizzando la macchina?"},
             headings: {"en": "English Message","it":"Hai una corsa ancora aperta"},
             //buttons: [{"id": "close trip", "text": "Chiudi la corsa", "icon": "ic_close"}],
             android_channel_id: "4a08ed2b-09b5-4a5b-9663-4623871fad86",

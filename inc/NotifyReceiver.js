@@ -1,5 +1,6 @@
 
 const push = require('./PushService');
+var timeService = require("./TimeService");
 
 module.exports = init;
 function init (opt) {
@@ -40,8 +41,9 @@ function init (opt) {
  */
     function notifyTripClose(trip_id, customer_id, customer_email,timestamp_beginning, duration) {
        console.log("ricevuto trip close id: " +trip_id + " customer: " + customer_id + " customer_email: " + customer_email);
+
        var params = {
-           beginning:timestamp_beginning,
+           beginning:timeService.getDataIta(timestamp_beginning),
            duration:duration,
            username: customer_email
        };
