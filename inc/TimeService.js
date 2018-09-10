@@ -1,12 +1,13 @@
 function getStringDay (day){
     var weekday = [];
-    weekday[0] = "Lunedì";
-    weekday[1] = "Martedì";
-    weekday[2] = "Mercoledì";
-    weekday[3] = "Giovedì";
-    weekday[4] = "Venerdì";
-    weekday[5] = "Sabato";
-    weekday[6] = "Domenica";
+    weekday[0] = "Domenica";
+    weekday[1] = "Lunedì";
+    weekday[2] = "Martedì";
+    weekday[3] = "Mercoledì";
+    weekday[4] = "Giovedì";
+    weekday[5] = "Venerdì";
+    weekday[6] = "Sabato";
+   
 
     return weekday[day];
 }
