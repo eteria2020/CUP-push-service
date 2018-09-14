@@ -39,5 +39,9 @@ module.exports = {
     getDataIta: function (UTC) {
         var dataEn = new Date (UTC);
         return getStringDay(dataEn.getUTCDay()) + " " + addZero(dataEn.getUTCDate()) + "-"  + getStringMonth(dataEn.getUTCMonth()) + "-"  + dataEn.getFullYear() + " alle " + addZero(dataEn.getHours()) + ":" + addZero(dataEn.getMinutes());
+    },
+    getDataForTimestampItaCloseTrip: function (timestamp) {
+        var dataEn = new Date (timestamp);
+        return getStringDay(dataEn.getUTCDay()) + " " + addZero(dataEn.getUTCDate()) + "-"  + getStringMonth(dataEn.getUTCMonth()) + "-"  + dataEn.getFullYear() + " alle " + addZero(dataEn.getUTCHours()) + ":" + addZero(dataEn.getUTCMinutes());
     }
 };
