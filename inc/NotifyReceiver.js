@@ -43,7 +43,7 @@ function init (opt) {
        console.log("ricevuto trip close id: " +trip_id + " customer: " + customer_id + " customer_email: " + customer_email);
 
        var params = {
-           beginning:timeService.getDataIta(timestamp_beginning),
+           beginning:timeService.getDataForTimestampItaCloseTrip(timestamp_beginning),
            duration:duration,
            username: customer_email
        };
