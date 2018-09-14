@@ -38,6 +38,6 @@ function addZero(i) {
 module.exports = {
     getDataIta: function (UTC) {
         var dataEn = new Date (UTC);
-        return getStringDay(dataEn.getUTCDay()) + " " + addZero(dataEn.getUTCDate()) + "-"  + getStringMonth(dataEn.getUTCMonth()) + "-"  + dataEn.getFullYear() + " alle " + addZero(dataEn.getCHours()) + ":" + addZero(dataEn.getMinutes());
+        return getStringDay(dataEn.getUTCDay()) + " " + addZero(dataEn.getUTCDate()) + "-"  + getStringMonth(dataEn.getUTCMonth()) + "-"  + dataEn.getFullYear() + " alle " + addZero(dataEn.getHours()) + ":" + addZero(dataEn.getMinutes());
     }
 };
