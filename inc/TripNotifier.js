@@ -10,7 +10,7 @@ var config = require("../config");
 var timeService = require("./TimeService");
 var Db = require("./db")({pg:pg,conString:config.conString});
 var time = 60;
-var interval = 30*60; //30 minutes
+var interval = 45*60; //45 minutes
 
 module.exports = init;
 
