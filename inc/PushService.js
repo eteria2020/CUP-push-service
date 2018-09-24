@@ -27,8 +27,8 @@ module.exports = {
 
         var message = {
             app_id: "202ca4a0-8ec3-4db3-af38-2986a3138106",
-            contents: {"it":"Hai terminato con successo la corsa iniziata "+params.beginning +" ed ha avuto una durata di "+params.duration},
-            headings: {"it":"Corsa chiusa: "},
+            contents: {"en":"Hai terminato con successo la corsa iniziata "+params.beginning +" ed ha avuto una durata di "+params.duration},
+            headings: {"en":"Corsa chiusa: "},
             android_channel_id: "8aa11c59-93ed-4b02-a018-d63a34a569c9",
             filters: [
                 {"field": "tag", "key": "username", "relation": "=", "value": params.username}
@@ -51,8 +51,8 @@ module.exports = {
 
         var message = {
             app_id: "202ca4a0-8ec3-4db3-af38-2986a3138106",
-            contents: {"it":"Hai una corsa aperta iniziata " + params.beginning + "\n Stai ancora utilizzando la macchina?"},
-            headings: {"it":"Corsa aperta: "},
+            contents: {"en":"Hai una corsa aperta iniziata " + params.beginning + "\n Stai ancora utilizzando la macchina?"},
+            headings: {"en":"Corsa aperta: "},
             //buttons: [{"id": "close trip", "text": "Chiudi la corsa", "icon": "ic_close"}],
             android_channel_id: "4a08ed2b-09b5-4a5b-9663-4623871fad86",
             filters: [
