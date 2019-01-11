@@ -4,7 +4,10 @@ var conString = expo.conString;
 module.exports = {
     pushToSegment: function (req, res, next) {
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ide screwd up
         var push = require('./PushService');
 
         push.pushToSegment(req.params,function (data) {
