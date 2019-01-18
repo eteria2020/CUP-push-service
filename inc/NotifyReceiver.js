@@ -3,50 +3,62 @@
 const push = require('./PushService')({});
 var timeService = require("./TimeService");
 const queuedTimeout = 30000;
+const receivedTimeout = 20000;
 
 module.exports = init;
+
+/**
+ *
+ * @param opt
+ * @return {NotifyReceiver}
+ */
 function init (opt) {
 
     // optional params
-    opt = opt || {};
 
-    var pg = opt.pg;
-    require('pg-spice').patch(pg);
-    var cstr = opt.conString;
-
-
-    var PGPubsub = require('pg-pubsub');
-    var pgpubsub = new PGPubsub(cstr);
-
-    return {
-        doListen: function () {
+    return new NotifyReceiver(opt);
 
 
 
-
-
-            pgpubsub.addChannel('command_close', function (payload) {
-                console.log("command -->", payload);
-                var p = payload.split(',');
-                notifyCommandClose(p[0], p[1],p[2]);
-            });
-
-            pgpubsub.addChannel('command_close_received', function (payload) {
-                console.log("command -->", payload);
-                var p = payload.split(',');
-                notifyCommandCloseReceived(p[0], p[1],p[2]);
-            });
-            pgpubsub.addChannel('trip', function (payload) {
-                console.log("trip -->", payload);
-                var p = payload.split(',');
-                notifyTripClose(p[0], p[1],p[2],p[3],p[4], p[5]);
-            });
-
-        }
-
-
-    }
 }
+
+/**
+ *
+ * @param opt
+ * @constructor
+ */
+function NotifyReceiver(opt){
+    // optional params
+    opt = opt || {};
+    this.queuedTimeoutReference =[];
+    this.receivedTimeoutReference = [];
+    this.Db = opt.db;
+}
+
+/**
+ *
+ */
+NotifyReceiver.prototype.doListen = function () {
+    var instance = this;
+    this.Db.addChannel('command_close', function (payload) {
+        console.log("command_close -->", payload);
+        var p = payload.split(',');
+        instance.notifyCommandClose(p[0], p[1],p[2], p[3]);
+    });
+
+    this.Db.addChannel('command_close_received', function (payload) {
+        console.log("command_close_received -->", payload);
+        var p = payload.split(',');
+        instance.notifyCommandCloseReceived(p[0], p[1],p[2], p[3]);
+    });
+
+    this.Db.addChannel('trip', function (payload) {
+        console.log("trip -->", payload);
+        var p = payload.split(',');
+        instance.notifyTripClose(p[0], p[1],p[2],p[3],p[4], p[5]);
+    });
+
+};
 
 /**
  *
@@ -56,13 +68,11 @@ function init (opt) {
  * @param timestamp_beginning
  * @param duration
  */
-    function notifyTripClose(trip_id, customer_id, customer_email,timestamp_beginning, duration) {
-       console.log("ricevuto trip close id: " +trip_id + " customer: " + customer_id + " customer_email: " + customer_email);
+NotifyReceiver.prototype.notifyTripClose = function (trip_id, customer_id, customer_email,timestamp_beginning, duration, car_plate) {
+        console.log("ricevuto trip close id: " +trip_id + " customer: " + customer_id + " customer_email: " + customer_email  + " car_plate: " + car_plate);
 
-    function notifyTripClose(trip_id, customer_id, customer_email,timestamp_beginning, duration, car_plate) {
-       console.log("ricevuto trip close id: " +trip_id + " customer: " + customer_id + " customer_email: " + customer_email  + " car_plate: " + car_plate);
-
-       clearInterval(receivedTimeoutReference[car_plate]);
+        clearTimeout(this.queuedTimeoutReference[car_plate]);
+        clearTimeout(this.receivedTimeoutReference[car_plate]);
 
        var params = {
            beginning:timeService.getDataForTimestampItaCloseTrip(timestamp_beginning),
@@ -73,7 +83,7 @@ function init (opt) {
            console.log(JSON.stringify(data));
            console.log(JSON.stringify(err));
        })
-    }
+    };
 
 /**
  *
@@ -81,65 +91,105 @@ function init (opt) {
  * @param car_plate
  * @param queued
  */
-var queuedTimeoutReference = [];
-function notifyCommandClose(command_id, car_plate, queued) {
+NotifyReceiver.prototype.notifyCommandClose = function (command_id, car_plate, queued, customer_card) {
     console.log("ricevuto command close id: " +command_id + " car_plate: " + car_plate + " queued at: " + queued);
 
-    queuedTimeoutReference[command_id] =  setTimeout(function (){
+
+    try{
+        clearTimeout(this.queuedTimeoutReference[car_plate]);
+    }catch(Exception){
+        console.error("Eccezione in clear queuedTimeoutReference" + Exception.stack)
+    }
+    var instance = this;
+
+    this.queuedTimeoutReference[car_plate] =  setTimeout(function (){
         //controllo se il comando è stato inviato
 
-        db.checkCommandSent(command_id);
-        que
+        console.log("timeout passato controllo se comando inviato");
+        instance.Db.checkCommandSent(command_id,errorQuery, function ( result, errorCb) {
+
+            if(result.rows[0].to_send){//send notification to customer
+
+                instance.Db.findCustomerFromRFID(customer_card,errorQuery, function (result, errorCb) {
+                    if(result.rows.length >0) {
+                        var customer_email = result.rows[0].email;
+                        console.log("sendCommandCloseError to " + customer_email);
+                        var params = {
+                            username: customer_email
+                        };
+                        push.sendCommandCloseError(params, function (data, err) {
+                            console.log(JSON.stringify(data));
+                            console.log(JSON.stringify(err));
+                        })
+                    }
+                });
+
+            }else {
+                instance.notifyCommandCloseReceived(command_id, car_plate, result.rows[0].received, customer_card);
+            }
+
+        });
 
         //Se comando non scaricato mando avviso di possibile problema di connettività della macchina / errore generico
 
-        var params = {
-            beginning:timeService.getDataForTimestampItaCloseTrip(timestamp_beginning),
-            duration:duration,
-            username: customer_email
-        };
-
-
-        push.sendEndTrip(params, function (data, err) {
-            console.log(JSON.stringify(data));
-            console.log(JSON.stringify(err));
-        })
 
     },queuedTimeout);
-}
+};
 
 
 
-var receivedTimeoutReference = [];
 /**
  *
  * @param command_id
  * @param car_plate
  * @param queued
  */
-function notifyCommandCloseReceived(command_id, car_plate, queued) {
-    console.log("ricevuto command close received id: " +command_id + " car_plate: " + car_plate + " queued at: " + queued);
+NotifyReceiver.prototype.notifyCommandCloseReceived = function (command_id, car_plate, received,  customer_card) {
+    console.log("ricevuto command close received id: " +command_id + " car_plate: " + car_plate + " queued at: " + received);
 
     try{
-        clearInterval(queuedTimeoutReference[command_id]);
+        clearTimeout(this.receivedTimeoutReference[car_plate]);
+        clearTimeout(this.queuedTimeoutReference[car_plate]);
     }catch(Exception){
         console.error("Eccezione in clear queuedInterval" + Exception.stack())
     }
 
-    receivedTimeoutReference[car_plate] =  setTimeout(function (){
+    var instance = this;
+    this.receivedTimeoutReference[car_plate] =  setTimeout(function (){
 
         //comando inviato controllo che il trip venga effettivamente chiuso
+        console.log("timeout passato controllo se comando ricevuto");
+        instance.Db.checkifOpenTrip(car_plate, errorQuery, function (result, error) {
+
+            if(result.rows.length>0){
+
+                instance.Db.findCustomerFromRFID(customer_card,errorQuery, function (result, errorCb) {
+                    if(result.rows.length >0) {
+                        var customer_email = result.rows[0].email;
+                        var params = {
+                            username: customer_email
+
+                        };
+                        push.sendTripCloseError(params, function (data, err) {
+                            console.log(JSON.stringify(data));
+                            console.log(JSON.stringify(err));
+                        })
+                    }
+                });
+
+
+
+            }
+        });
 
         //Se trip non chiuso mando push
-        var params = {
-            beginning:timeService.getDataForTimestampItaCloseTrip(timestamp_beginning),
-            duration:duration,
-            username: customer_email
-        };
-        push.sendEndTrip(params, function (data, err) {
-            console.log(JSON.stringify(data));
-            console.log(JSON.stringify(err));
-        })
-    },queuedTimeout);
+
+    },receivedTimeout);
+
+};
+
+function errorQuery(err){
+
+    console.log("ERRORE QUERY" + err.stack);
 
 }

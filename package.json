@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "APIs on NodeJS for Sharengo",
   "main": "index.js",
-  "author": "Diego Betto",
+  "author": "Fulvio Bombara",
   "dependencies": {
     "bunyan": "1.4.0",
     "morgan": "1.6.0",

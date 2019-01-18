@@ -1,72 +1,4 @@
 
-
-<<<<<<< HEAD
-module.exports = {
-    pushToSegment: function (params, cb) {
-
-        var message = {
-            app_id: "202ca4a0-8ec3-4db3-af38-2986a3138106",
-            contents: {"en": "English Message","it":"Body"},
-            headings: {"en": "English Message","it":"TitleData"},
-            included_segments: [params.segment],
-            data:{
-                "t": 3
-            }
-        };
-
-        sendNotification(message,cb);
-    },
-    /**
-     *
-     * @param {Object} params parametri di ingresso alla funzione
-     * @param {string} params.beginning data di inizio corsa
-     * @param {string} params.username email del cliente a cui inviare la notifica
-     * @param {string} params.duration costo stimato della corsa
-     * @param {notificationCallback}cb callback di risposta dell'invio della notifica
-     */
-    sendEndTrip: function (params, cb) {
-
-        var message = {
-            app_id: "202ca4a0-8ec3-4db3-af38-2986a3138106",
-            contents: {"en":"Hai terminato con successo la corsa iniziata "+params.beginning +" ed ha avuto una durata di "+params.duration},
-            headings: {"en":"Corsa chiusa: "},
-            android_channel_id: "8aa11c59-93ed-4b02-a018-d63a34a569c9",
-            filters: [
-                {"field": "tag", "key": "username", "relation": "=", "value": params.username}
-            ],
-            data:{
-                "t": 1
-            }
-        };
-
-        sendNotification(message, cb);
-    },
-    /**
-     *
-     * @param {Object} params parametri di ingresso alla funzione
-     * @param {string} params.beginning data di inizio corsa
-     * @param {string} params.username email del cliente a cui inviare la notifica
-     * @param cb
-     */
-    sendOpenTrip: function (params, cb) {
-
-        var message = {
-            app_id: "202ca4a0-8ec3-4db3-af38-2986a3138106",
-            contents: {"en":"Hai una corsa aperta iniziata " + params.beginning + "\n Stai ancora utilizzando la macchina?"},
-            headings: {"en":"Corsa aperta: "},
-            //buttons: [{"id": "close trip", "text": "Chiudi la corsa", "icon": "ic_close"}],
-            android_channel_id: "4a08ed2b-09b5-4a5b-9663-4623871fad86",
-            filters: [
-                {"field": "tag", "key": "username", "relation": "=", "value": params.username}
-            ],
-            data:{
-                "t": 2
-            }
-        };
-
-        sendNotification(message, cb);
-    }
-=======
 module.exports = module.exports = init;
 
 
@@ -122,6 +54,7 @@ function init (opt) {
                 }
             };
 
+            console.log("Sending EndTrip to " + params.username);
             sendNotification(message, cb);
         },
         /**
@@ -147,10 +80,47 @@ function init (opt) {
                 }
             };
 
+            console.log("Sending OpenTrip to " + params.username);
             sendNotification(message, cb);
+        },
+        sendCommandCloseError: function (params, cb) {
+            var message = {
+                app_id: "202ca4a0-8ec3-4db3-af38-2986a3138106",
+                contents: {"en": "sendCommandCloseError "},
+                headings: {"en": "sendCommandCloseError "},
+                //buttons: [{"id": "close trip", "text": "Chiudi la corsa", "icon": "ic_close"}],
+                android_channel_id: "4a08ed2b-09b5-4a5b-9663-4623871fad86",
+                filters: [
+                    {"field": "tag", "key": "username", "relation": "=", "value": params.username}
+                ],
+                data: {
+                    "t": 2
+                }
+            };
+            console.log("Sending CommandCloseError to " + params.username);
+            sendNotification(message, cb);
+
+        },
+        sendTripCloseError: function (params, cb) {
+            var message = {
+                app_id: "202ca4a0-8ec3-4db3-af38-2986a3138106",
+                contents: {"en": "sendTripCloseError"},
+                headings: {"en": "sendTripCloseError"},
+                //buttons: [{"id": "close trip", "text": "Chiudi la corsa", "icon": "ic_close"}],
+                android_channel_id: "4a08ed2b-09b5-4a5b-9663-4623871fad86",
+                filters: [
+                    {"field": "tag", "key": "username", "relation": "=", "value": params.username}
+                ],
+                data: {
+                    "t": 2
+                }
+            };
+
+            console.log("Sending TripCloseError to " + params.username);
+            sendNotification(message, cb);
+
         }
     };
->>>>>>> ide screwd up
 };
 
 /**
@@ -176,8 +146,13 @@ var sendNotification = function(data, cb) {
     //console.log(options)
     var req = https.request(options, function(res) {
         res.on('data', function(data) {
-            console.log(JSON.parse(data));
-            cb(JSON.parse(data),null);
+            try {
+                //console.log(JSON.parse(data));
+                cb(JSON.parse(data), null);
+            }catch (Exception){
+                console.error(Exception.stack)
+                cb(null, Exception)
+            }
         });
     });
 
