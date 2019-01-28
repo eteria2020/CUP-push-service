@@ -1,4 +1,3 @@
-
 module.exports = module.exports = init;
 
 /**
@@ -6,10 +5,10 @@ module.exports = module.exports = init;
  * @param opt
  * @return {{pushToSegment: pushToSegment, sendEndTrip: sendEndTrip, sendOpenTrip: sendOpenTrip, sendCommandCloseError: sendCommandCloseError, sendTripCloseError: sendTripCloseError}}
  */
-function init (opt) {
+function init(opt) {
 
     var config = require('../config');
-    const defLang = config.defLang|| "it";
+    const defLang = config.defLang || "it";
 
     return {
         pushToSegment: function (params, cb) {
@@ -132,7 +131,7 @@ function init (opt) {
  * @param {Object}data
  * @param {notificationCallback}cb
  */
-var sendNotification = function(data, cb) {
+var sendNotification = function (data, cb) {
     var headers = {
         "Content-Type": "application/json; charset=utf-8",
         "Authorization": "Basic ZjhiMGIzYzYtMTJmNS00YWE0LTg1ZjYtMWM0NDY1ZjgxNmEx"
@@ -148,20 +147,20 @@ var sendNotification = function(data, cb) {
 
     var https = require('https');
     //console.log(options)
-    var req = https.request(options, function(res) {
-        res.on('data', function(data) {
+    var req = https.request(options, function (res) {
+        res.on('data', function (data) {
             try {
                 //console.log(JSON.parse(data));
                 cb(JSON.parse(data), null);
-            }catch (Exception){
+            } catch (Exception) {
                 console.error(Exception.stack)
                 cb(null, Exception)
             }
         });
     });
 
-    req.on('error', function(e) {
-        cb(null,e);
+    req.on('error', function (e) {
+        cb(null, e);
     });
 
     req.write(JSON.stringify(data));

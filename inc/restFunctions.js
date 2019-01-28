@@ -6,8 +6,8 @@ module.exports = {
     pushToSegment: function (req, res, next) {
 
 
-        push.pushToSegment(req.params,function (data) {
-            sendOutJSON(res,200,"send succesfully",data);
+        push.pushToSegment(req.params, function (data) {
+            sendOutJSON(res, 200, "send succesfully", data);
         });
         return next();
     },
@@ -18,17 +18,16 @@ module.exports = {
      * @param next
      */
     endTripForUsername: function (req, res, next) {
-        req.
-        next();
-        push.sendEndTrip(req.params,function (data, err) {
-            if(err){
+        req.next();
+        push.sendEndTrip(req.params, function (data, err) {
+            if (err) {
                 console.log("ERROR:");
                 console.log(err);
             }
-            else if(data){
+            else if (data) {
                 console.log("Response:");
                 console.log(JSON.parse(data));
-                sendOutJSON(res,200,"send succesfully",JSON.parse(data));
+                sendOutJSON(res, 200, "send succesfully", JSON.parse(data));
             }
         });
     }
@@ -36,11 +35,6 @@ module.exports = {
 
 
 /* EXTRA FUNCTIONS */
-
-
-
-
-
 
 
 /***
@@ -60,22 +54,21 @@ function sendOutJSON(res, status, reason, data) {
 }
 
 
-
 /**
  * console log request
  * @param  req request
  */
 function logReq(req) {
     console.log(
-            "====================\n",
-            Date.now(),
-            "\n--------------------\n",
-            req.query,
-            "\n--------------------\n",
-            req.headers,
-            "\n--------------------\n",
-            req.params,
-            "\n\n"
-            );
+        "====================\n",
+        Date.now(),
+        "\n--------------------\n",
+        req.query,
+        "\n--------------------\n",
+        req.headers,
+        "\n--------------------\n",
+        req.params,
+        "\n\n"
+    );
 }
 

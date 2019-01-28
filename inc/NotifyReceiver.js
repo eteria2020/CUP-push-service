@@ -1,9 +1,9 @@
-
-
 const push = require('./PushService')({});
 var timeService = require("./TimeService");
-const queuedTimeout = 30000;
-const receivedTimeout = 20000;
+
+var config = require('../config');
+const queuedTimeout = config.queuedTimeout || 30000;
+const receivedTimeout = config.receivedTimeout || 90000;
 
 module.exports = init;
 
@@ -12,12 +12,11 @@ module.exports = init;
  * @param opt
  * @return {NotifyReceiver}
  */
-function init (opt) {
+function init(opt) {
 
     // optional params
 
     return new NotifyReceiver(opt);
-
 
 
 }
@@ -27,10 +26,10 @@ function init (opt) {
  * @param opt
  * @constructor
  */
-function NotifyReceiver(opt){
+function NotifyReceiver(opt) {
     // optional params
     opt = opt || {};
-    this.queuedTimeoutReference =[];
+    this.queuedTimeoutReference = [];
     this.receivedTimeoutReference = [];
     this.Db = opt.db;
 }
@@ -43,19 +42,19 @@ NotifyReceiver.prototype.doListen = function () {
     this.Db.addChannel('command_close', function (payload) {
         console.log("command_close -->", payload);
         var p = payload.split(',');
-        instance.notifyCommandClose(p[0], p[1],p[2], p[3]);
+        instance.notifyCommandClose(p[0], p[1], p[2], p[3]);
     });
 
     this.Db.addChannel('command_close_received', function (payload) {
         console.log("command_close_received -->", payload);
         var p = payload.split(',');
-        instance.notifyCommandCloseReceived(p[0], p[1],p[2], p[3]);
+        instance.notifyCommandCloseReceived(p[0], p[1], p[2], p[3]);
     });
 
     this.Db.addChannel('trip', function (payload) {
         console.log("trip -->", payload);
         var p = payload.split(',');
-        instance.notifyTripClose(p[0], p[1],p[2],p[3],p[4], p[5]);
+        instance.notifyTripClose(p[0], p[1], p[2], p[3], p[4], p[5]);
     });
 
 };
@@ -68,22 +67,22 @@ NotifyReceiver.prototype.doListen = function () {
  * @param timestamp_beginning
  * @param duration
  */
-NotifyReceiver.prototype.notifyTripClose = function (trip_id, customer_id, customer_email,timestamp_beginning, duration, car_plate) {
-        console.log("ricevuto trip close id: " +trip_id + " customer: " + customer_id + " customer_email: " + customer_email  + " car_plate: " + car_plate);
+NotifyReceiver.prototype.notifyTripClose = function (trip_id, customer_id, customer_email, timestamp_beginning, duration, car_plate) {
+    console.log("ricevuto trip close id: " + trip_id + " customer: " + customer_id + " customer_email: " + customer_email + " car_plate: " + car_plate);
 
-        clearTimeout(this.queuedTimeoutReference[car_plate]);
-        clearTimeout(this.receivedTimeoutReference[car_plate]);
+    clearTimeout(this.queuedTimeoutReference[car_plate]);
+    clearTimeout(this.receivedTimeoutReference[car_plate]);
 
-       var params = {
-           beginning:timeService.getDataForTimestampItaCloseTrip(timestamp_beginning),
-           duration:duration,
-           username: customer_email
-       };
-       push.sendEndTrip(params, function (data, err) {
-           console.log(JSON.stringify(data));
-           console.log(JSON.stringify(err));
-       })
+    var params = {
+        beginning: timeService.getDataForTimestampItaCloseTrip(timestamp_beginning),
+        duration: duration,
+        username: customer_email
     };
+    push.sendEndTrip(params, function (data, err) {
+        console.log(JSON.stringify(data));
+        console.log(JSON.stringify(err));
+    })
+};
 
 /**
  *
@@ -92,26 +91,26 @@ NotifyReceiver.prototype.notifyTripClose = function (trip_id, customer_id, custo
  * @param queued
  */
 NotifyReceiver.prototype.notifyCommandClose = function (command_id, car_plate, queued, customer_card) {
-    console.log("ricevuto command close id: " +command_id + " car_plate: " + car_plate + " queued at: " + queued);
+    console.log("ricevuto command close id: " + command_id + " car_plate: " + car_plate + " queued at: " + queued);
 
 
-    try{
+    try {
         clearTimeout(this.queuedTimeoutReference[car_plate]);
-    }catch(Exception){
+    } catch (Exception) {
         console.error("Eccezione in clear queuedTimeoutReference" + Exception.stack)
     }
     var instance = this;
 
-    this.queuedTimeoutReference[car_plate] =  setTimeout(function (){
+    this.queuedTimeoutReference[car_plate] = setTimeout(function () {
         //controllo se il comando è stato inviato
 
         console.log("timeout passato controllo se comando inviato");
-        instance.Db.checkCommandSent(command_id,errorQuery, function ( result, errorCb) {
+        instance.Db.checkCommandSent(command_id, errorQuery, function (result, errorCb) {
 
-            if(result.rows[0].to_send){//send notification to customer
+            if (result.rows[0].to_send) {//send notification to customer
 
-                instance.Db.findCustomerFromRFID(customer_card,errorQuery, function (result, errorCb) {
-                    if(result.rows.length >0) {
+                instance.Db.findCustomerFromRFID(customer_card, errorQuery, function (result, errorCb) {
+                    if (result.rows.length > 0) {
                         var customer_email = result.rows[0].email;
                         console.log("sendCommandCloseError to " + customer_email);
                         var params = {
@@ -124,7 +123,7 @@ NotifyReceiver.prototype.notifyCommandClose = function (command_id, car_plate, q
                     }
                 });
 
-            }else {
+            } else {
                 instance.notifyCommandCloseReceived(command_id, car_plate, result.rows[0].received, customer_card);
             }
 
@@ -133,9 +132,8 @@ NotifyReceiver.prototype.notifyCommandClose = function (command_id, car_plate, q
         //Se comando non scaricato mando avviso di possibile problema di connettività della macchina / errore generico
 
 
-    },queuedTimeout);
+    }, queuedTimeout);
 };
-
 
 
 /**
@@ -144,27 +142,27 @@ NotifyReceiver.prototype.notifyCommandClose = function (command_id, car_plate, q
  * @param car_plate
  * @param queued
  */
-NotifyReceiver.prototype.notifyCommandCloseReceived = function (command_id, car_plate, received,  customer_card) {
-    console.log("ricevuto command close received id: " +command_id + " car_plate: " + car_plate + " queued at: " + received);
+NotifyReceiver.prototype.notifyCommandCloseReceived = function (command_id, car_plate, received, customer_card) {
+    console.log("ricevuto command close received id: " + command_id + " car_plate: " + car_plate + " queued at: " + received);
 
-    try{
+    try {
         clearTimeout(this.receivedTimeoutReference[car_plate]);
         clearTimeout(this.queuedTimeoutReference[car_plate]);
-    }catch(Exception){
+    } catch (Exception) {
         console.error("Eccezione in clear queuedInterval" + Exception.stack())
     }
 
     var instance = this;
-    this.receivedTimeoutReference[car_plate] =  setTimeout(function (){
+    this.receivedTimeoutReference[car_plate] = setTimeout(function () {
 
         //comando inviato controllo che il trip venga effettivamente chiuso
         console.log("timeout passato controllo se comando ricevuto");
         instance.Db.checkifOpenTrip(car_plate, errorQuery, function (result, error) {
 
-            if(result.rows.length>0){
+            if (result.rows.length > 0) {
 
-                instance.Db.findCustomerFromRFID(customer_card,errorQuery, function (result, errorCb) {
-                    if(result.rows.length >0) {
+                instance.Db.findCustomerFromRFID(customer_card, errorQuery, function (result, errorCb) {
+                    if (result.rows.length > 0) {
                         var customer_email = result.rows[0].email;
                         var params = {
                             username: customer_email
@@ -178,17 +176,16 @@ NotifyReceiver.prototype.notifyCommandCloseReceived = function (command_id, car_
                 });
 
 
-
             }
         });
 
         //Se trip non chiuso mando push
 
-    },receivedTimeout);
+    }, receivedTimeout);
 
 };
 
-function errorQuery(err){
+function errorQuery(err) {
 
     console.log("ERRORE QUERY" + err.stack);
 

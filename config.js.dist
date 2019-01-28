@@ -4,4 +4,6 @@ exports.port = process.env.PORT || 8023;
 exports.unsecurePort = process.env.UPORT || 8021;
 exports.logPath = "/var/log/services/";
 exports.defLang = "it";
+exports.queuedTimeout = 30000;
+exports.receivedTimeout = 20000;
 
