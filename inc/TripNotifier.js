@@ -6,30 +6,30 @@ const push = require('./PushService');
 var pg = require('pg');
 pg.defaults.poolSize = 25;
 
-pg.defaults.poolIdleTimeout=20000; // 20 sec
+pg.defaults.poolIdleTimeout = 20000; // 20 sec
 var config = require("../config");
 var timeService = require("./TimeService");
-var Db = require("./db")({pg:pg,conString:config.conString});
+var Db = require("./db")({pg: pg, conString: config.conString});
 var time = 60;
-var interval = 45*60; //45 minutes
+var interval = 45 * 60; //45 minutes
 
 module.exports = init;
 
-function init (opt) {
+function init(opt) {
 
     // optional params
     opt = opt || {};
 
-    if(typeof opt.time !== "undefined")
+    if (typeof opt.time !== "undefined")
         time = opt.time;
-    if(typeof opt.interval !== "undefined")
+    if (typeof opt.interval !== "undefined")
         time = opt.interval;
-    
+
 
     return {
         doListen: function () {
 
-            setInterval(fetchForTrip,time*1000);
+            setInterval(fetchForTrip, time * 1000);
 
         }
 
@@ -44,23 +44,23 @@ function fetchForTrip() {
         "\ttimestamp_beginning>(now()-interval '24 hours') AND\n" +
         "\t timestamp_end is null order by id desc)\n" +
         " SELECT unholy, trip_id, customer_id, email,time from tab, customers WHERE unholy<$1 and customer_id = customers.id";
-    var fetchForTripQueryParams = [time,interval];
-    
-    Db.executeQuery(fetchForTripQuery,fetchForTripQueryParams,function (err) {
+    var fetchForTripQueryParams = [time, interval];
+
+    Db.executeQuery(fetchForTripQuery, fetchForTripQueryParams, function (err) {
         console.log(err);
-        
-    },function (res, err) {
+
+    }, function (res, err) {
         //invia notifica a tutti quelli presenti in res
         //console.log(res.rows);
 
-        for(var i=0;i<res.rowCount;i++){
-            var dataEn = new Date (res.rows[i].time);
+        for (var i = 0; i < res.rowCount; i++) {
+            var dataEn = new Date(res.rows[i].time);
             var dataIta = timeService.getDataIta(dataEn);
             var params = {
                 //FULVIO MALISSIMO !!
 
                 beginning: dataIta,
-                username : res.rows[i].email
+                username: res.rows[i].email
             };
 
             push.sendOpenTrip(params, function (data, err) {
@@ -70,5 +70,5 @@ function fetchForTrip() {
 
         }
     })
-    
+
 }
