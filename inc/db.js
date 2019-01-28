@@ -8,8 +8,13 @@ function init(opt) {
     opt = opt || {};
 
     var pg = opt.pg;
+
+    require('pg-spice').patch(pg);
     var conString = opt.conString;
 
+    var PGPubsub = require('pg-pubsub');
+    var pgpubsub = new PGPubsub(conString);
+    console.log(conString);
 
     return {
         /**
@@ -43,6 +48,33 @@ function init(opt) {
                         }
                     });
             });
+
+        },
+
+        addChannel: function (channelName, callback) {
+            pgpubsub.addChannel(channelName, callback);
+        },
+        /**
+         *
+         * @param command_id
+         * @param {function} error
+         * @param {queryCallback} cb
+         */
+        checkCommandSent: function (command_id, error, cb) {
+            this.executeQuery("select to_send, received from commands where id = $1",[command_id],error, cb )
+
+
+        },
+
+        findCustomerFromRFID: function (customer_code, error, cb) {
+
+
+            this.executeQuery("select email from customers where card_code = $1",[customer_code],error, cb )
+
+        },
+        checkifOpenTrip:function (car_plate, error, cb) {
+
+            this.executeQuery("select id from trips where timestamp_end IS NULL AND car_plate = $1",[car_plate],error, cb )
 
         }
 

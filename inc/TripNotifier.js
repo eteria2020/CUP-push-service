@@ -5,7 +5,8 @@ const push = require('./PushService');
 
 var pg = require('pg');
 pg.defaults.poolSize = 25;
-pg.defaults.poolIdleTimeout=5000; // 5 sec
+
+pg.defaults.poolIdleTimeout=20000; // 20 sec
 var config = require("../config");
 var timeService = require("./TimeService");
 var Db = require("./db")({pg:pg,conString:config.conString});

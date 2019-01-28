@@ -1,11 +1,10 @@
 var expo = require('../index').expo;
 var pg = expo.pg;
 var conString = expo.conString;
+var push = require("./PushService")();
 module.exports = {
     pushToSegment: function (req, res, next) {
 
-
-        var push = require('./PushService');
 
         push.pushToSegment(req.params,function (data) {
             sendOutJSON(res,200,"send succesfully",data);

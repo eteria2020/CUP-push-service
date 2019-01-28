@@ -16,6 +16,9 @@ var pg = require('pg');
 pg.defaults.poolSize = 25;
 pg.defaults.poolIdleTimeout=5000; // 5 sec
 
+
+var Db = require("./inc/db")({pg:pg,conString:config.conString});
+
 var fs = require('fs');
 var validator = require('validator');
 var morgan = require('morgan');
@@ -33,8 +36,13 @@ var log = bunyan.createLogger({
 });
 
 
+process.on('uncaughtException',function(err){
+    console.log('something terrible happened..' + err.stack)
+});
+
+
 //Notify Receiver
-var notifyReceiver = require('./inc/NotifyReceiver')( {pg: pg, conString: conString});
+var notifyReceiver = require('./inc/NotifyReceiver')( {pg: pg, conString: conString, db:Db});
 notifyReceiver.doListen();
 
 
@@ -117,7 +125,7 @@ function registerServer(server) {
 
 	server.on('uncaughtException', function (req, res, route, err) {
 	  console.log('======= server uncaughtException');
-	  console.log(err);
+	  console.log(err.stack);
 	  res.send(200, { handler: 'server uncaughtException'});
 	 /* if (err.status <= 399 && err.status >= 500) {
 		process.nextTick( process.exit(1) );
