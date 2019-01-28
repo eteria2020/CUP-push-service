@@ -1,7 +1,11 @@
 
 module.exports = module.exports = init;
 
-
+/**
+ *
+ * @param opt
+ * @return {{pushToSegment: pushToSegment, sendEndTrip: sendEndTrip, sendOpenTrip: sendOpenTrip, sendCommandCloseError: sendCommandCloseError, sendTripCloseError: sendTripCloseError}}
+ */
 function init (opt) {
 
     var config = require('../config');
@@ -86,8 +90,8 @@ function init (opt) {
         sendCommandCloseError: function (params, cb) {
             var message = {
                 app_id: "202ca4a0-8ec3-4db3-af38-2986a3138106",
-                contents: {"en": "sendCommandCloseError "},
-                headings: {"en": "sendCommandCloseError "},
+                contents: {"en": "C'è stato un errore nel chiudere la tua corsa da remoto, riprova "},
+                headings: {"en": "Errore chiusura corsa: "},
                 //buttons: [{"id": "close trip", "text": "Chiudi la corsa", "icon": "ic_close"}],
                 android_channel_id: "4a08ed2b-09b5-4a5b-9663-4623871fad86",
                 filters: [
@@ -104,8 +108,8 @@ function init (opt) {
         sendTripCloseError: function (params, cb) {
             var message = {
                 app_id: "202ca4a0-8ec3-4db3-af38-2986a3138106",
-                contents: {"en": "sendTripCloseError"},
-                headings: {"en": "sendTripCloseError"},
+                contents: {"en": "C'è stato un problema nel chiudere la tua corsa da remoto, hai girato le chiavi?"},
+                headings: {"en": "Errore chiusura corsa:"},
                 //buttons: [{"id": "close trip", "text": "Chiudi la corsa", "icon": "ic_close"}],
                 android_channel_id: "4a08ed2b-09b5-4a5b-9663-4623871fad86",
                 filters: [

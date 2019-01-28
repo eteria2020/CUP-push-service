@@ -125,7 +125,7 @@ function registerServer(server) {
 
 	server.on('uncaughtException', function (req, res, route, err) {
 	  console.log('======= server uncaughtException');
-	  console.log(err);
+	  console.log(err.stack);
 	  res.send(200, { handler: 'server uncaughtException'});
 	 /* if (err.status <= 399 && err.status >= 500) {
 		process.nextTick( process.exit(1) );
