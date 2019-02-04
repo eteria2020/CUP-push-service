@@ -66,6 +66,7 @@ NotifyReceiver.prototype.doListen = function () {
  * @param customer_email
  * @param timestamp_beginning
  * @param duration
+ * @param car_plate
  */
 NotifyReceiver.prototype.notifyTripClose = function (trip_id, customer_id, customer_email, timestamp_beginning, duration, car_plate) {
     console.log("ricevuto trip close id: " + trip_id + " customer: " + customer_id + " customer_email: " + customer_email + " car_plate: " + car_plate);

@@ -153,7 +153,8 @@ var sendNotification = function (data, cb) {
                 //console.log(JSON.parse(data));
                 cb(JSON.parse(data), null);
             } catch (Exception) {
-                console.error(Exception.stack)
+                console.error(Exception.stack);
+                console.error(data);
                 cb(null, Exception)
             }
         });
