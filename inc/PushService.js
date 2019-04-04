@@ -92,7 +92,7 @@ function init(opt) {
                 contents: {"en": "C'è stato un errore nel chiudere la tua corsa da remoto, riprova "},
                 headings: {"en": "Errore chiusura corsa: "},
                 //buttons: [{"id": "close trip", "text": "Chiudi la corsa", "icon": "ic_close"}],
-                android_channel_id: "4a08ed2b-09b5-4a5b-9663-4623871fad86",
+                android_channel_id: "8aa11c59-93ed-4b02-a018-d63a34a569c9",
                 filters: [
                     {"field": "tag", "key": "username", "relation": "=", "value": params.username}
                 ],
@@ -110,7 +110,7 @@ function init(opt) {
                 contents: {"en": "C'è stato un problema nel chiudere la tua corsa da remoto, hai girato le chiavi?"},
                 headings: {"en": "Errore chiusura corsa:"},
                 //buttons: [{"id": "close trip", "text": "Chiudi la corsa", "icon": "ic_close"}],
-                android_channel_id: "4a08ed2b-09b5-4a5b-9663-4623871fad86",
+                android_channel_id: "8aa11c59-93ed-4b02-a018-d63a34a569c9",
                 filters: [
                     {"field": "tag", "key": "username", "relation": "=", "value": params.username}
                 ],
