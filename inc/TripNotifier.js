@@ -1,7 +1,7 @@
 /**
  Questo file si occupa della notifica periodica ogni 30 minuti di corsa aperta
  */
-const push = require('./PushService');
+const push = require('./PushService')({});
 
 var pg = require('pg');
 pg.defaults.poolSize = 25;

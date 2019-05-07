@@ -1,7 +1,7 @@
 var expo = require('../index').expo;
 var pg = expo.pg;
 var conString = expo.conString;
-var push = require("./PushService")();
+var push = require("./PushService")({});
 module.exports = {
     pushToSegment: function (req, res, next) {
 
@@ -18,7 +18,6 @@ module.exports = {
      * @param next
      */
     endTripForUsername: function (req, res, next) {
-        req.next();
         push.sendEndTrip(req.params, function (data, err) {
             if (err) {
                 console.log("ERROR:");
@@ -30,6 +29,7 @@ module.exports = {
                 sendOutJSON(res, 200, "send succesfully", JSON.parse(data));
             }
         });
+        return next();
     }
 };
 
