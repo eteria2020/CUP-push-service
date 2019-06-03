@@ -31,7 +31,7 @@ function init(opt) {
 
             setInterval(fetchForTrip, time * 1000);
 			setInterval(getLongTrips, time * 1000);
-			getLongTrips();
+			
         }
 
 
@@ -134,7 +134,7 @@ function insertNewSos(trip) {
 
     var insertNewSos = "INSERT INTO \"public\".\"messages_outbox\" (\"id\",\"transport\",\"destination\",\"type\",\"subject\",\"text\",\"submitted\",\"sent\",\"acknowledged\",\"meta\",\"sent_meta\",\"webuser_id\")\n" +
 		"VALUES (nextval('messages_outbox_id_seq'::regclass),NULL,'support','SOS','SOS call',NULL,now(),NULL,NULL,'"+data+"',NULL,NULL);";
-	console.log(insertNewSos);
+	//console.log(insertNewSos);
 	Db.executeQuery(insertNewSos, null, function (err) {
 		console.log(err);
 	}, function (res, err) {
