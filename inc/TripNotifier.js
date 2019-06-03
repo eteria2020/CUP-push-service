@@ -31,7 +31,7 @@ function init(opt) {
 
             setInterval(fetchForTrip, time * 1000);
 			setInterval(getLongTrips, time * 1000);
-
+			getLongTrips();
         }
 
 
@@ -76,7 +76,7 @@ function fetchForTrip() {
 
 function getLongTrips() {//trips longer than 3 hours
     var longTripTimeHours = 3;
-	var fetchGetLongTripsQuery = "select trips.id as trip_id,car_plate,customer_id,mobile,timestamp_beginning,longitude,latitude,battery,km from trips,customers,cars where cars.plate = trips.car_plate and timestamp_end is null and customers.id=trips.customer_id and customers.maintainer=false and customers.gold_list=false and timestamp_beginning <= (now() - interval '"+longTripTimeHours+" hours') order by timestamp_beginning desc limit 10;";
+	var fetchGetLongTripsQuery = "select trips.id as trip_id,car_plate,customer_id,mobile,timestamp_beginning,longitude,latitude,battery,km from trips,customers,cars where cars.plate = trips.car_plate and timestamp_end is null and customers.id=trips.customer_id and customers.maintainer=false and customers.gold_list=false and timestamp_beginning <= (now() - interval '"+longTripTimeHours+" hours') order by timestamp_beginning desc;";
 
 	Db.executeQuery(fetchGetLongTripsQuery, null, function (err) {
 		console.log(err);
@@ -134,7 +134,7 @@ function insertNewSos(trip) {
 
     var insertNewSos = "INSERT INTO \"public\".\"messages_outbox\" (\"id\",\"transport\",\"destination\",\"type\",\"subject\",\"text\",\"submitted\",\"sent\",\"acknowledged\",\"meta\",\"sent_meta\",\"webuser_id\")\n" +
 		"VALUES (nextval('messages_outbox_id_seq'::regclass),NULL,'support','SOS','SOS call',NULL,now(),NULL,NULL,'"+data+"',NULL,NULL);";
-	//console.log(insertNewSos);
+	console.log(insertNewSos);
 	Db.executeQuery(insertNewSos, null, function (err) {
 		console.log(err);
 	}, function (res, err) {
