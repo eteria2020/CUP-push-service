@@ -132,6 +132,9 @@ function init(opt) {
  * @param {notificationCallback}cb
  */
 var sendNotification = function (data, cb) {
+    console.log("failsafe");
+	cb(null, "failsafe");
+    return;
     var headers = {
         "Content-Type": "application/json; charset=utf-8",
         "Authorization": "Basic ZjhiMGIzYzYtMTJmNS00YWE0LTg1ZjYtMWM0NDY1ZjgxNmEx"
