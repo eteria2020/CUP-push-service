@@ -31,7 +31,7 @@ function init(opt) {
 
             setInterval(fetchForTrip, time * 1000);
 			setInterval(getLongTrips, time * 1000);
-
+			
         }
 
 
@@ -76,7 +76,7 @@ function fetchForTrip() {
 
 function getLongTrips() {//trips longer than 3 hours
     var longTripTimeHours = 3;
-	var fetchGetLongTripsQuery = "select trips.id as trip_id,car_plate,customer_id,mobile,timestamp_beginning,longitude,latitude,battery,km from trips,customers,cars where cars.plate = trips.car_plate and timestamp_end is null and customers.id=trips.customer_id and customers.maintainer=false and customers.gold_list=false and timestamp_beginning <= (now() - interval '"+longTripTimeHours+" hours') order by timestamp_beginning desc limit 10;";
+	var fetchGetLongTripsQuery = "select trips.id as trip_id,car_plate,customer_id,mobile,timestamp_beginning,longitude,latitude,battery,km from trips,customers,cars where cars.plate = trips.car_plate and timestamp_end is null and customers.id=trips.customer_id and customers.maintainer=false and customers.gold_list=false and timestamp_beginning <= (now() - interval '"+longTripTimeHours+" hours') order by timestamp_beginning desc;";
 
 	Db.executeQuery(fetchGetLongTripsQuery, null, function (err) {
 		console.log(err);
