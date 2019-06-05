@@ -57,7 +57,7 @@ function init(opt) {
                 }
             };
 
-            console.log("Sending EndTrip to " + params.username);
+            console.log(new Date().toISOString()+"\nSending EndTrip to " + params.username);
             sendNotification(message, cb);
         },
         /**
@@ -83,7 +83,7 @@ function init(opt) {
                 }
             };
 
-            console.log("Sending OpenTrip to " + params.username);
+            console.log(new Date().toISOString()+"\nSending OpenTrip to " + params.username);
             sendNotification(message, cb);
         },
         sendCommandCloseError: function (params, cb) {
@@ -100,7 +100,7 @@ function init(opt) {
                     "t": 2
                 }
             };
-            console.log("Sending CommandCloseError to " + params.username);
+            console.log(new Date().toISOString()+"\nSending CommandCloseError to " + params.username);
             sendNotification(message, cb);
 
         },
@@ -119,7 +119,7 @@ function init(opt) {
                 }
             };
 
-            console.log("Sending TripCloseError to " + params.username);
+            console.log(new Date().toISOString()+"\nSending TripCloseError to " + params.username);
             sendNotification(message, cb);
 
         }
@@ -132,9 +132,6 @@ function init(opt) {
  * @param {notificationCallback}cb
  */
 var sendNotification = function (data, cb) {
-    console.log("failsafe");
-	cb(null, "failsafe");
-    return;
     var headers = {
         "Content-Type": "application/json; charset=utf-8",
         "Authorization": "Basic ZjhiMGIzYzYtMTJmNS00YWE0LTg1ZjYtMWM0NDY1ZjgxNmEx"
@@ -156,7 +153,7 @@ var sendNotification = function (data, cb) {
                 //console.log(JSON.parse(data));
                 cb(JSON.parse(data), null);
             } catch (Exception) {
-                console.error(Exception.stack);
+                console.error(new Date().toISOString()+"\n",Exception.stack);
                 console.error(data);
                 cb(null, Exception)
             }
