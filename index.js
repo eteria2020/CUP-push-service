@@ -37,7 +37,7 @@ var log = bunyan.createLogger({
 
 
 process.on('uncaughtException', function (err) {
-    console.log('something terrible happened..' + err.stack)
+    console.log(new Date().toISOString()+'\nsomething terrible happened..' + err.stack)
 });
 
 
@@ -105,24 +105,24 @@ function registerServer(server) {
 
     server.on('InternalServerError', function (req, res, err, cb) {
         err._customContent = 'Error';
-        console.log('InternalServerError', err);
+        console.log(new Date().toISOString()+'\nInternalServerError', err);
         return cb();
     });
     server.on('InternalError', function (req, res, err, cb) {
         err._customContent = 'Error';
-        console.log('InternalError', err);
+        console.log(new Date().toISOString()+'\nInternalError', err);
         return cb();
     });
 
     server.on('ResourceNotFoundError', function (req, res, err, cb) {
         err._customContent = 'Not found';
-        console.log('ResourceNotFound');
+        console.log(new Date().toISOString()+'\nResourceNotFound');
         console.log(err);
         return cb();
     });
 
     server.on('uncaughtException', function (req, res, route, err) {
-        console.log('======= server uncaughtException');
+        console.log(new Date().toISOString()+'\n======= server uncaughtException');
         console.log(err.stack);
         res.send(200, {handler: 'server uncaughtException'});
         /* if (err.status <= 399 && err.status >= 500) {
@@ -131,7 +131,7 @@ function registerServer(server) {
         // handleError(req, res, route, err);
     });
     process.on('uncaughtException', function (err) {
-        console.log('==== process uncaughtException');
+        console.log(new Date().toISOString()+'\n==== process uncaughtException');
         err = err || {};
         console.log('======== ', arguments);
         /*if (!(err.status >= 400 && err.status <= 499)) {
@@ -167,8 +167,8 @@ var responseFormatter = {
             res.statusCode = body.statusCode || 500;
 
             if (body.body) {
-                console.log('\nERROR\n\n===============\n');
-                console.log(body);
+                console.log(new Date().toISOString()+'\nERROR\n\n===============\n');
+                console.log(body.toString());
                 res.statusCode = 400;
                 body = {
                     status: 400,
@@ -228,7 +228,7 @@ log.info('Listen standard server: ' + standardPort);
 unsecureServer.listen({host: '0.0.0.0', port: unsecurePort});
 log.info('Listen unsecure debug server: ' + unsecurePort);
 
-console.log("Started...");
+console.log(new Date().toISOString()+"\nStarted...");
 
 
 
